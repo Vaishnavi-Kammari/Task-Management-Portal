@@ -47,7 +47,7 @@ stages:
           steps:
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: vaishnavi-taskportal-connection
+              azureSubscription: pgsn-intern-arm-svc
               appName: vaishnavi-taskportal-ui
               appType: webAppLinux
               package: $(Pipeline.Workspace)/frontend-build
