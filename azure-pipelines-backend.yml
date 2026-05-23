@@ -27,7 +27,7 @@ stages:
           steps:
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: vaishnavi-taskportal-connection
+              azureSubscription: pgsn-intern-arm-svc
               appName: vaishnavi-taskportal-api
               appType: webAppLinux
               package: $(Pipeline.Workspace)/backend-jar/*.jar
@@ -43,7 +43,7 @@ stages:
           steps:
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: vaishnavi-taskportal-connection
+              azureSubscription: pgsn-intern-arm-svc
               appName: vaishnavi-taskportal-api
               appType: webAppLinux
               package: $(Pipeline.Workspace)/backend-jar/*.jar
