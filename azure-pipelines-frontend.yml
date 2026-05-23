@@ -1,0 +1,37 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildReact
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+    - script: |
+        cd student-management-frontend/student-management-frontend
+        npm install
+        npm run build
+      env:
+        REACT_APP_API_URL: https://vaishnavi-taskportal-api.azurewebsites.net
+    - publish: student-management-frontend/student-management-frontend/build
+      artifact: frontend-build
+
+- stage: DeployProduction
+  dependsOn: Build
+  environment: production
+  jobs:
+  - deployment: DeployUI
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: vaishnavi-taskportal-connection
+              appName: vaishnavi-taskportal-ui
+              appType: webAppLinux
+              package: $(Pipeline.Workspace)/frontend-build

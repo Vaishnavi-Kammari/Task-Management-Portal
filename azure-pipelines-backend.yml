@@ -1,0 +1,49 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJar
+    steps:
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'Studentman/pom.xml'
+        goals: 'package -DskipTests'
+        publishJUnitResults: false
+    - publish: Studentman/target/*.jar
+      artifact: backend-jar
+
+- stage: DeployStaging
+  dependsOn: Build
+  environment: staging
+  jobs:
+  - deployment: DeployAPI
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: vaishnavi-taskportal-connection
+              appName: vaishnavi-taskportal-api
+              appType: webAppLinux
+              package: $(Pipeline.Workspace)/backend-jar/*.jar
+
+- stage: DeployProduction
+  dependsOn: DeployStaging
+  environment: production
+  jobs:
+  - deployment: DeployAPIProd
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: vaishnavi-taskportal-connection
+              appName: vaishnavi-taskportal-api
+              appType: webAppLinux
+              package: $(Pipeline.Workspace)/backend-jar/*.jar
